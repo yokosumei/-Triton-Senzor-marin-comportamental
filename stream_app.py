@@ -21,6 +21,7 @@ from collections import deque
 from dataclasses import dataclass
 from pathlib import Path
 
+from libcamera import Transform 
 import cv2
 import numpy as np
 import pandas as pd
@@ -854,7 +855,9 @@ def camera_thread():
             from picamera2 import Picamera2
             picam = Picamera2()
             # cfg = picam.create_video_configuration(main={"size": (W, H), "format": "RGB888"})
-            cfg = picam.create_video_configuration(main={"format": "RGB888", "size": (W, H)})
+            cfg = picam.create_video_configuration(
+                main={"format": "RGB888", "size": (W, H)},
+            transform=Transform(hflip=True, vflip=True) )
             picam.configure(cfg)
             picam.start()
             use_picam = True
