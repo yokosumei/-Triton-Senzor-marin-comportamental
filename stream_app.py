@@ -1219,10 +1219,19 @@ def segmentation_inference_thread(video=None):
                     color = color_map.get(label, (0, 255, 255))
 
                     mask_np = mask.cpu().numpy()
-                    annotated[mask_np > 0.5] = color
 
-                    # Afișează eticheta în centrul măștii
-                    ys, xs = np.where(mask_np > 0.5)
+                    if mask_np.ndim == 3:
+                        mask_np = mask_np[0]
+
+                    h, w = annotated.shape[:2]
+                    if mask_np.shape[:2] != (h, w):
+                        mask_np = cv2.resize(mask_np.astype(np.float32), (w, h), interpolation=cv2.INTER_NEAREST)
+
+                    m = (mask_np > 0.5)
+                    annotated[m] = color
+
+                    ys, xs = np.where(m)
+
                     if len(xs) > 0 and len(ys) > 0:
                         cx, cy = int(np.mean(xs)), int(np.mean(ys))
                         cv2.putText(annotated, label, (cx, cy),
